@@ -1,11 +1,12 @@
 define pcodeop exit;
-define pcodeop io_read;
-define pcodeop io_write;
-define pcodeop io_write_sync;
 
 define pcodeop unkce_io_read;
 
 define pcodeop vtlb;
+define pcodeop itlb;
+define pcodeop sleep;
+define pcodeop trap;
+define pcodeop xdfence;
 define pcodeop ptlb;
 
 define pcodeop cxset;
@@ -41,7 +42,9 @@ define pcodeop __toggle_flag_ta;
 
 # TODO: check if that set flags on hardware
 macro muls(dst, src1, src2) {
-  dst = sext(src1) * sext(src2);
+  local a:4 = src1;
+  local b:4 = src2;
+  dst = ((a << 16) s>> 16) * ((b << 16) s>> 16);
 }
 
 ### Branch instructions start ###
@@ -55,13 +58,13 @@ bra_cc: "p4"             is subopcodeL=0x04                              { c:1 =
 bra_cc: "p5"             is subopcodeL=0x05                              { c:1 = $(P5_flag); export c; }
 bra_cc: "p6"             is subopcodeL=0x06                              { c:1 = $(P6_flag); export c; }
 bra_cc: "p7"             is subopcodeL=0x07                              { c:1 = $(P7_flag); export c; }
-bra_cc: "c"              is subopcodeL=0x08                              { c:1 = $(C_flag); export c; }
+bra_cc: "b"              is subopcodeL=0x08                              { c:1 = $(C_flag); export c; }
 bra_cc: "o"              is subopcodeL=0x09                              { c:1 = $(O_flag); export c; }
 bra_cc: "s"              is subopcodeL=0x0a                              { c:1 = $(S_flag); export c; }
-bra_cc: "z"              is subopcodeL=0x0b                              { c:1 = $(Z_flag); export c; }
+bra_cc: "e"              is subopcodeL=0x0b                              { c:1 = $(Z_flag); export c; }
 
 bra_cc: "a"              is subopcodeL=0x0c                              { c:1 = !($(C_flag) || $(Z_flag)); export c; }
-bra_cc: "na"             is subopcodeL=0x0d                              { c:1 = $(C_flag) || $(Z_flag); export c; }
+bra_cc: "be"             is subopcodeL=0x0d                              { c:1 = $(C_flag) || $(Z_flag); export c; }
 bra_cc:                  is subopcodeL=0x0e                              { c:1 = 1; export c; }
 bra_cc: "not p0"         is subopcodeL=0x10                              { c:1 = !$(P0_flag); export c; }
 bra_cc: "not p1"         is subopcodeL=0x11                              { c:1 = !$(P1_flag); export c; }
@@ -71,13 +74,12 @@ bra_cc: "not p4"         is subopcodeL=0x14                              { c:1 =
 bra_cc: "not p5"         is subopcodeL=0x15                              { c:1 = !$(P5_flag); export c; }
 bra_cc: "not p6"         is subopcodeL=0x16                              { c:1 = !$(P6_flag); export c; }
 bra_cc: "not p7"         is subopcodeL=0x17                              { c:1 = !$(P7_flag); export c; }
-bra_cc: "nc"             is subopcodeL=0x18                              { c:1 = !$(C_flag); export c; }
+bra_cc: "ae"             is subopcodeL=0x18                              { c:1 = !$(C_flag); export c; }
 bra_cc: "no"             is subopcodeL=0x19                              { c:1 = !$(O_flag); export c; }
 bra_cc: "ns"             is subopcodeL=0x1a                              { c:1 = !$(S_flag); export c; }
-bra_cc: "nz"             is subopcodeL=0x1b                              { c:1 = !$(Z_flag); export c; }
-bra_cc: "g"              is subopcodeL=0x1c                              { c:1 = !$(Z_flag) && ($(O_flag) == $(S_flag)); export c; }
-
+bra_cc: "ne"             is subopcodeL=0x1b                              { c:1 = !$(Z_flag); export c; }
 @if defined(SUPPORT_FUC3P)
+bra_cc: "g"              is subopcodeL=0x1c                              { c:1 = !$(Z_flag) && ($(O_flag) == $(S_flag)); export c; }
 bra_cc: "le"             is subopcodeL=0x1d                              { c:1 = $(Z_flag) || ($(O_flag) != $(S_flag)); export c; }
 bra_cc: "l"              is subopcodeL=0x1e                              { c:1 = ($(O_flag) != $(S_flag)); export c; }
 bra_cc: "ge"             is subopcodeL=0x1f                              { c:1 = $(O_flag) == $(S_flag); export c; }
@@ -85,11 +87,11 @@ bra_cc: "ge"             is subopcodeL=0x1f                              { c:1 =
 
 ### End bra conditional ###
 
-:bra bra_cc rel8 is raw_opcode=0xf4; subopcodeL < 0x20 & bra_cc; rel8 {
+:bra bra_cc rel8 is raw_opcode=0xf4; subopcodeb1_0_7 < 0x20 & bra_cc; rel8 {
   if (bra_cc) goto rel8;
 }
 
-:bra bra_cc rel16 is raw_opcode=0xf5; subopcodeL < 0x20 & bra_cc; rel16 {
+:bra bra_cc rel16 is raw_opcode=0xf5; subopcodeb1_0_7 < 0x20 & bra_cc; rel16 {
   if (bra_cc) goto rel16;
 }
 

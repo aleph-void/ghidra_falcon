@@ -4,4 +4,4 @@
 @define SUPPORT_FUC4P
 @define SUPPORT_FUCOLD
 
-@include "base_falcon.slaspec"
+@include "base_falcon.sinc"

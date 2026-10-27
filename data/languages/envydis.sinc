@@ -303,6 +303,58 @@
 # // moved to sized_include.sinc
 #}
 #
+# $flags bit operand (envydis T(fl)): p0-p7, c, o, s, z, ie0-ie2, is0-is2, ta; exports the bit number
+attach names [ pred_imm ] [ "p0" "p1" "p2" "p3" "p4" "p5" "p6" "p7" ];
+flagbit: pred_imm is imm8 < 8 & pred_imm & fimm8 { local b:4 = fimm8; export b; }
+flagbit: "c"   is imm8=0x08 { local b:4 = 8; export b; }
+flagbit: "o"   is imm8=0x09 { local b:4 = 9; export b; }
+flagbit: "s"   is imm8=0x0a { local b:4 = 10; export b; }
+flagbit: "z"   is imm8=0x0b { local b:4 = 11; export b; }
+flagbit: "ie0" is imm8=0x10 { local b:4 = 16; export b; }
+flagbit: "ie1" is imm8=0x11 { local b:4 = 17; export b; }
+@if FUC_VERSION != "3"
+flagbit: "ie2" is imm8=0x12 { local b:4 = 18; export b; }
+@endif
+flagbit: "is0" is imm8=0x14 { local b:4 = 20; export b; }
+flagbit: "is1" is imm8=0x15 { local b:4 = 21; export b; }
+@if FUC_VERSION != "3"
+flagbit: "is2" is imm8=0x16 { local b:4 = 22; export b; }
+@endif
+flagbit: "ta"  is imm8=0x18 { local b:4 = 24; export b; }
+
+# mpush rN / mpop rN: push r0..rN in order (rN lowest), pop rN..r0 (fuc5; the order is not documented)
+mpushlist: is reg1=0 { push32(r0); }
+mpushlist: is reg1=1 { push32(r0); push32(r1); }
+mpushlist: is reg1=2 { push32(r0); push32(r1); push32(r2); }
+mpushlist: is reg1=3 { push32(r0); push32(r1); push32(r2); push32(r3); }
+mpushlist: is reg1=4 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); }
+mpushlist: is reg1=5 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); }
+mpushlist: is reg1=6 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); }
+mpushlist: is reg1=7 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); }
+mpushlist: is reg1=8 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); }
+mpushlist: is reg1=9 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); }
+mpushlist: is reg1=10 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); }
+mpushlist: is reg1=11 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); push32(r11); }
+mpushlist: is reg1=12 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); push32(r11); push32(r12); }
+mpushlist: is reg1=13 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); push32(r11); push32(r12); push32(r13); }
+mpushlist: is reg1=14 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); push32(r11); push32(r12); push32(r13); push32(r14); }
+mpushlist: is reg1=15 { push32(r0); push32(r1); push32(r2); push32(r3); push32(r4); push32(r5); push32(r6); push32(r7); push32(r8); push32(r9); push32(r10); push32(r11); push32(r12); push32(r13); push32(r14); push32(r15); }
+mpoplist: is reg1=0 { pop32(r0); }
+mpoplist: is reg1=1 { pop32(r1); pop32(r0); }
+mpoplist: is reg1=2 { pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=3 { pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=4 { pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=5 { pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=6 { pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=7 { pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=8 { pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=9 { pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=10 { pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=11 { pop32(r11); pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=12 { pop32(r12); pop32(r11); pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=13 { pop32(r13); pop32(r12); pop32(r11); pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=14 { pop32(r14); pop32(r13); pop32(r12); pop32(r11); pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
+mpoplist: is reg1=15 { pop32(r15); pop32(r14); pop32(r13); pop32(r12); pop32(r11); pop32(r10); pop32(r9); pop32(r8); pop32(r7); pop32(r6); pop32(r5); pop32(r4); pop32(r3); pop32(r2); pop32(r1); pop32(r0); }
 #static struct insn tabm[] = {
 #	{ 0x00000000, 0x000000c0, T(si) },
 #	{ 0x00000040, 0x000000c0, T(si) },
@@ -310,12 +362,12 @@
 #
 #	{ 0x000000c0, 0x000000ff, OP3B, N("mulu"), REG2, REG1, IMM8 },
 :mulu reg2, reg1, imm8 is raw_opcode=0xc0; reg2 & reg1; imm8 {
-  mulu(reg2, reg1, imm8:1);
+  mulu(reg2, reg1, imm8);
 }
 
 #	{ 0x000000c1, 0x000000ff, OP3B, N("muls"), REG2, REG1, IMM8S },
 :muls reg2, reg1, imm8s is raw_opcode=0xc1; reg2 & reg1; imm8s {
-  muls(reg2, reg1, imm8s:1);
+  muls(reg2, reg1, imm8s);
 }
 
 #	{ 0x000000c2, 0x000000ff, OP3B, N("sext"), REG2, REG1, IMM8 },
@@ -324,10 +376,12 @@
 }
 
 #	{ 0x000000c3, 0x000000ff, OP3B, N("extrs"), REG2, REG1, BITF8, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :extrs reg2, reg1, bitf8_0^":"^suffix is raw_opcode=0xc3; reg2 & reg1; bitf8_0 & bitf8_1 [ suffix=bitf8_0 + bitf8_1; ] {
-  # TODO: macro this a lot
-  reg2 = (((reg1 >> bitf8_0) & ((1 << (bitf8_1+1)) - 1)) << (32 - (bitf8_1+1))) s>> (32 - (bitf8_1+1));
+  local bf:4 = bitf8_0 | (bitf8_1 << 5);
+  extrs(reg2, reg1, bf);
 }
+@endif
 
 #	{ 0x000000c4, 0x000000ff, OP3B, N("and"), REG2, REG1, IMM8 },
 :and reg2, reg1, imm8 is raw_opcode=0xc4; reg2 & reg1; imm8 { and(reg2, reg1, imm8); }
@@ -339,9 +393,12 @@
 :xor reg2, reg1, imm8 is raw_opcode=0xc6; reg2 & reg1; imm8 { xor(reg2, reg1, imm8); }
 
 #	{ 0x000000c7, 0x000000ff, OP3B, N("extr"), REG2, REG1, BITF8, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :extr reg2, reg1, bitf8_0^":"^suffix is raw_opcode=0xc7; reg2 & reg1; bitf8_0 & bitf8_1 [ suffix=bitf8_0 + bitf8_1; ] {
-  reg2 = (reg1 >> bitf8_0) & ((1 << bitf8_1) - 1);
+  local bf:4 = bitf8_0 | (bitf8_1 << 5);
+  extr(reg2, reg1, bf);
 }
+@endif
 
 #	{ 0x000000c8, 0x000000ff, OP3B, N("xbit"), REG2, REG1, IMM8 },
 :xbit reg2, reg1, imm8 is raw_opcode=0xc8; reg2 & reg1; imm8 {
@@ -349,34 +406,51 @@
 }
 
 #	{ 0x000000cb, 0x000000ff, OP3B, N("ins"), REG2, REG1, BITF8, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :ins reg2, reg1, bitf8_0^":"^suffix is raw_opcode=0xcb; reg2 & reg1; bitf8_0 & bitf8_1 [ suffix=bitf8_0 + bitf8_1; ] {
-  reg2 = todo(reg1, bitf8_0 :4, suffix :4);
+  local bf:4 = bitf8_0 | (bitf8_1 << 5);
+  ins(reg2, reg1, bf);
 }
+@endif
 
 #	{ 0x000000cc, 0x000000ff, OP3B, N("div"), REG2, REG1, IMM8, .fmask = F_FUC3P },
-:mod reg2, reg1, imm8 is raw_opcode=0xcc; reg2 & reg1; imm8 {
+@if defined(SUPPORT_FUC3P)
+:div reg2, reg1, imm8 is raw_opcode=0xcc; reg2 & reg1; imm8 {
   reg2 = reg1 / imm8;
 }
+@endif
 
 #	{ 0x000000cd, 0x000000ff, OP3B, N("mod"), REG2, REG1, IMM8, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :mod reg2, reg1, imm8 is raw_opcode=0xcd; reg2 & reg1; imm8 {
   reg2 = reg1 % imm8;
 }
+@endif
 
 #	{ 0x000000ce, 0x000000ff, OP3B, U("ce"), REG2, IORI },
-:unkce reg2, "I"^[reg1 + offset] is raw_opcode=0xce; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
-  reg2 = unkce_io_read(reg1 + offset);
+:iords reg2, "I"^[reg1 + offset] is raw_opcode=0xce; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  reg2 = *[io]:4 (reg1 + offset);
 }
 
 #	{ 0x000000cf, 0x000000ff, OP3B, N("iord"), REG2, IORI },
-:iord reg2, [reg1 + offset] is raw_opcode=0xcf; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
-  reg2 = io_read(reg1 + offset);
+:iord reg2, "I"^[reg1 + offset] is raw_opcode=0xcf; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  reg2 = *[io]:4 (reg1 + offset);
 }
 
 #	{ 0x000000c0, 0x000000f0, OP3B, OOPS, REG2, REG1, IMM8 },
 #
 #	{ 0x000000d0, 0x000000ff, OP3B, N("iowr"), IORI, REG2, .fmask = F_FUCOLD },
 #	{ 0x000000d1, 0x000000ff, OP3B, N("iowrs"), IORI, REG2, .fmask = F_FUC3P | F_FUCOLD },
+@if defined(SUPPORT_FUCOLD)
+:iowr "I"^[reg1 + offset], reg2 is raw_opcode=0xd0; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  *[io]:4 (reg1 + offset) = reg2;
+}
+@if defined(SUPPORT_FUC3P)
+:iowrs "I"^[reg1 + offset], reg2 is raw_opcode=0xd1; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  *[io]:4 (reg1 + offset) = reg2;
+}
+@endif
+@endif
 #	{ 0x000000d0, 0x000000f0, OP3B, OOPS, REG1, REG2, IMM8, .fmask = F_FUCOLD },
 #
 @if defined(SUPPORT_FUC5P)
@@ -389,20 +463,23 @@
 #
 #	{ 0x000000e0, 0x000000ff, OP4B, N("mulu"), REG2, REG1, IMM16 },
 :mulu reg2, reg1, imm16 is raw_opcode=0xe0; reg2 & reg1; imm16 {
-  mulu(reg2, reg1, imm16:2);
+  mulu(reg2, reg1, imm16);
 }
 
 
 #	{ 0x000000e1, 0x000000ff, OP4B, N("muls"), REG2, REG1, IMM16S },
 :muls reg2, reg1, imm16s is raw_opcode=0xe1; reg2 & reg1; imm16s {
-  muls(reg2, reg1, imm16s:2);
+  muls(reg2, reg1, imm16s);
 }
 
 
 #	{ 0x000000e3, 0x000000ff, OP4B, N("extrs"), REG2, REG1, BITF16, .fmask = F_FUC3P },
-:extrs reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xe3; reg2 & reg1; bitf16_0 & bitf16_1 [ suffix=bitf16_0 + bitf16_1; ] {
-  reg2 = todo(reg1, bitf16_0 :4, suffix :4);
+@if defined(SUPPORT_FUC3P)
+:extrs reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xe3; reg2 & reg1; bitf16_0 & bitf16_1 & bitf16_hi=0 [ suffix=bitf16_0 + bitf16_1; ] {
+  local bf:4 = bitf16_0 | (bitf16_1 << 5);
+  extrs(reg2, reg1, bf);
 }
+@endif
 
 #	{ 0x000000e4, 0x000000ff, OP4B, N("and"), REG2, REG1, IMM16 },
 :and reg2, reg1, imm16 is raw_opcode=0xe4; reg2 & reg1; imm16 { and(reg2, reg1, imm16); }
@@ -414,44 +491,54 @@
 :xor reg2, reg1, imm16 is raw_opcode=0xe6; reg2 & reg1; imm16 { xor(reg2, reg1, imm16); }
 
 #	{ 0x000000e7, 0x000000ff, OP4B, N("extr"), REG2, REG1, BITF16, .fmask = F_FUC3P },
-:extr reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xe7; reg2 & reg1; bitf16_0 & bitf16_1 [ suffix=bitf16_0 + bitf16_1; ] {
-  reg2 = (reg1 >> bitf16_0) & ((1 << (bitf16_1 + 1)) - 1);
+@if defined(SUPPORT_FUC3P)
+:extr reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xe7; reg2 & reg1; bitf16_0 & bitf16_1 & bitf16_hi=0 [ suffix=bitf16_0 + bitf16_1; ] {
+  local bf:4 = bitf16_0 | (bitf16_1 << 5);
+  extr(reg2, reg1, bf);
 }
+@endif
 
 
 #	{ 0x000000eb, 0x000000ff, OP4B, N("ins"), REG2, REG1, BITF16, .fmask = F_FUC3P },
-:ins reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xeb; reg2 & reg1; bitf16_0 & bitf16_1 [ suffix=bitf16_0 + bitf16_1; ] {
-  reg2 = todo(reg1, bitf16_0 :4, suffix :4);
+@if defined(SUPPORT_FUC3P)
+:ins reg2, reg1, bitf16_0^":"^suffix is raw_opcode=0xeb; reg2 & reg1; bitf16_0 & bitf16_1 & bitf16_hi=0 [ suffix=bitf16_0 + bitf16_1; ] {
+  local bf:4 = bitf16_0 | (bitf16_1 << 5);
+  ins(reg2, reg1, bf);
 }
+@endif
 
 #	{ 0x000000ec, 0x000000ff, OP4B, N("div"), REG2, REG1, IMM16, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :div reg2, reg1, imm16 is raw_opcode=0xec; reg2 & reg1; imm16 { reg2 = reg1 / imm16; }
+@endif
 
 #	{ 0x000000ed, 0x000000ff, OP4B, N("mod"), REG2, REG1, IMM16, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :mod reg2, reg1, imm16 is raw_opcode=0xed; reg2 & reg1; imm16 { reg2 = reg1 % imm16; }
+@endif
 
 #	{ 0x000000e0, 0x000000f0, OP4B, OOPS, REG2, REG1, IMM16 },
 #
 #	{ 0x000000f0, 0x00000ffe, T(ol0), N("mulu"), REG1, T(i) },
 :mulu reg1, imm8 is raw_opcode=0xf0; subopcode2=0x0 & reg1; imm8  {
-  mulu(reg1, reg1, imm8:1);
+  mulu(reg1, reg1, imm8);
 }
 :mulu reg1, imm16 is raw_opcode=0xf1; subopcode2=0x0 & reg1; imm16  {
-  mulu(reg1, reg1, imm16:2);
+  mulu(reg1, reg1, imm16);
 }
 
 
 #	{ 0x000001f0, 0x00000ffe, T(ol0), N("muls"), REG1, T(is) },
 :muls reg1, imm8s is raw_opcode=0xf0; subopcode2=0x1 & reg1; imm8s {
-  muls(reg1, reg1, imm8s:1);
+  muls(reg1, reg1, imm8s);
 }
 :muls reg1, imm16s is raw_opcode=0xf1; subopcode2=0x1 & reg1; imm16s {
-  muls(reg1, reg1, imm16s:2);
+  muls(reg1, reg1, imm16s);
 }
 
 #	{ 0x000002f0, 0x00000fff, T(ol0), N("sext"), REG1, T(i) },
 :sext reg1, imm8 is raw_opcode=0xf0; subopcode2=0x2 & reg1; imm8 {
-  todo();
+  op_sext(reg1, reg1, imm8);
 }
 
 #	{ 0x000003f0, 0x00000ffe, T(ol0), N("sethi"), REG1, T(ih) },
@@ -504,19 +591,16 @@
 }
 
 #	{ 0x00000cf0, 0x00000fff, T(ol0), N("xbit"), REG1, csw, T(fl) },
-:xbit reg1, csw, imm8 is raw_opcode=0xf0; subopcode2=0xC & reg1 & csw; imm8 {
-  # TODO: display flag name
-  packflags(csw);
-  xbit(reg1, csw, imm8);
-  unpackflags(csw);
+:xbit reg1, csw, flagbit is raw_opcode=0xf0; subopcode2=0xC & reg1 & csw; flagbit {
+  xbit(reg1, csw, flagbit);
 }
 
 #	{ 0x000000f0, 0x000000fe, T(ol0), OOPS, REG1, T(i) },
 #
 #	{ 0x000008f2, 0x00000fff, OP3B, N("setp"), T(fl), REG1 },
-:setp imm8, reg1 is raw_opcode=0xf2; subopcode2=0x8 & reg1; imm8 {
-  csw = csw & ~(1 << imm8);
-  csw = csw | ((reg1 & 1) << imm8);
+:setp flagbit, reg1 is raw_opcode=0xf2; subopcode2=0x8 & reg1; flagbit {
+  csw = csw & ~(1 << flagbit);
+  csw = csw | ((reg1 & 1) << flagbit);
 }
 
 #	{ 0x00000cf2, 0x00000fff, OP3B, OOPS, REG1, .fmask = F_CRYPT },
@@ -533,6 +617,9 @@
 #
 #	{ 0x000000f4, 0x000020fe, T(ol0), N("bra"), T(p), T(bt) },
 #	{ 0x000020f4, 0x00003ffe, T(ol0), N("bra"), T(abt), ENDMARK },
+:bra addr8 is raw_opcode=0xf4; subopcodeb1_0_7=0x20; addr8 {
+  goto addr8;
+}
 :bra addr16 is raw_opcode=0xf5; subopcodeb1_0_7=0x20; addr16 {
   goto addr16;
 }
@@ -552,9 +639,9 @@
 @endif
 
 #	{ 0x000028f4, 0x00003fff, T(ol0), N("sleep"), T(fl) }, /* sleeps while given flag is true */
-:sleep imm8 is raw_opcode=0xf4 ; subopcodeb1_0_7=0x28 ; imm8 {
-  # TODO: display flag name
-  todo(imm8 :1);
+:sleep flagbit is raw_opcode=0xf4 ; subopcodeb1_0_7=0x28 ; flagbit {
+  # sleeps while the flag is set (an interrupt wakes the core)
+  sleep(flagbit);
 }
 
 #	{ 0x000030f4, 0x00003ffe, T(ol0), N("add"), SP, T(is) },
@@ -566,101 +653,81 @@
 }
 
 #	{ 0x000031f4, 0x00003fff, T(ol0), N("bset"), csw, T(fl) },
-:bset csw, "ie0" is raw_opcode=0xf4 ; subopcodeb1_0_7=0x31 & csw ; imm8=0x10 {
-  __set_flag_ie0();
-  csw[0x10, 1] = 1;
+:bset csw, flagbit is raw_opcode=0xf4 ; subopcodeb1_0_7=0x31 & csw ; flagbit {
+  bset(csw, flagbit);
 }
-:bset csw, "ie1" is raw_opcode=0xf4 ; subopcodeb1_0_7=0x31 & csw ; imm8=0x11 {
-  __set_flag_ie1();
-  csw[0x11, 1] = 1;
-}
-:bset csw, imm8 is raw_opcode=0xf4 ; subopcodeb1_0_7=0x31 & csw ; imm8 {
-  # TODO: display flag name
-  packflags(csw);
-  bset(csw, imm8);
-  unpackflags(csw);
-}
-
 #	{ 0x000032f4, 0x00003fff, T(ol0), N("bclr"), csw, T(fl) },
-:bclr csw, "ie0" is raw_opcode=0xf4 ; subopcodeb1_0_7=0x32 & csw ; imm8=0x10 {
-  __clear_flag_ie0();
-  csw[0x10, 1] = 0;
+:bclr csw, flagbit is raw_opcode=0xf4 ; subopcodeb1_0_7=0x32 & csw ; flagbit {
+  bclr(csw, flagbit);
 }
-:bclr csw, "ie1" is raw_opcode=0xf4 ; subopcodeb1_0_7=0x32 & csw ; imm8=0x11 {
-  __clear_flag_ie1();
-  csw[0x11, 1] = 0;
-}
-:bclr csw, "ie2" is raw_opcode=0xf4 ; subopcodeb1_0_7=0x32 & csw ; imm8=0x12 {
-  __clear_flag_ie2();
-  csw[0x12, 1] = 0;
-}
-
-:bclr csw, imm8 is raw_opcode=0xf4 ; subopcodeb1_0_7=0x32 & csw ; imm8 {
-  # TODO: display flag name
-  packflags(csw);
-  bclr(csw, imm8);
-  unpackflags(csw);
-}
-
 #	{ 0x000033f4, 0x00003fff, T(ol0), N("btgl"), csw, T(fl) },
-:btgl csw, imm8 is raw_opcode=0xf4 ; subopcodeb1_0_7=0x33 & csw ; imm8 {
-  # TODO: display flag name
-  packflags(csw);
-  btgl(csw, imm8);
-  unpackflags(csw);
+:btgl csw, flagbit is raw_opcode=0xf4 ; subopcodeb1_0_7=0x33 & csw ; flagbit {
+  btgl(csw, flagbit);
 }
-
 #	{ 0x00003cf4, 0x00003fff, T(ol0), N("cxset"), IMM8, .fmask = F_CRYPT },
+@if defined(CRYPT_EXTENSION)
 :cxset imm8 is raw_opcode=0xf4 ; subopcodeb1_0_7=0x3c ; imm8 {
   cxset(imm8 :1);
 }
+@endif
 
 #	{ 0x00003cf5, 0x00003fff, T(ol0), T(cocmd), .fmask = F_CRYPT },
 #	{ 0x000000f4, 0x000000fe, T(ol0), OOPS, T(i) },
 #
 @if defined(SUPPORT_FUC5P)
 #	{ 0x000000f6, 0x000000ff, OP3B, N("iowr"), IORI, REG2, .fmask = F_FUC5P },
-:iowr [reg1^"+"^offset], reg2 is raw_opcode=0xf6; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
-  io_write(reg1 + offset, reg2);
+:iowr "I"^[reg1 + offset], reg2 is raw_opcode=0xf6; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  *[io]:4 (reg1 + offset) = reg2;
 }
 
 #	{ 0x000000f7, 0x000000ff, OP3B, N("iowrs"), IORI, REG2, .fmask = F_FUC5P },
-:iowrs [reg1^"+"^offset], reg2 is raw_opcode=0xf7; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
-  io_write_sync(reg1+offset, reg2);
+:iowrs "I"^[reg1 + offset], reg2 is raw_opcode=0xf7; reg2 & reg1; imm8 [ offset=imm8 * 4; ] {
+  *[io]:4 (reg1+offset) = reg2;
 }
 @endif
 
 #
 #	{ 0x000000f8, 0x00000fff, OP2B, N("ret"), ENDMARK },
-:ret is raw_opcode=0xf8; subopcode2=0x0 {
+:ret is raw_opcode=0xf8; subopcode2=0x0 & reg1=0 {
   ret();
 }
 
 #	{ 0x000001f8, 0x00000fff, OP2B, N("iret"), ENDMARK },
-:iret is raw_opcode=0xf8; subopcode2=0x1 {
-  todo();
-  goto inst_start;
+:iret is raw_opcode=0xf8; subopcode2=0x1 & reg1=0 {
+  # pc from the stack, ie0/ie1 (and ie2 on v4+) restored from is0/is1/is2
+  local t:4;
+  pop32(t);
+  csw[16,1] = csw[20,1];
+  csw[17,1] = csw[21,1];
+@if FUC_VERSION != "3"
+  csw[18,1] = csw[22,1];
+@endif
+  return [t];
 }
 
 #	{ 0x000002f8, 0x00000fff, OP2B, N("exit"), ENDMARK },
-:exit is raw_opcode=0xf8; subopcode2=0x2 {
+:exit is raw_opcode=0xf8; subopcode2=0x2 & reg1=0 {
   exit();
 #<spin>
   goto inst_start;
 }
 
 #	{ 0x000003f8, 0x00000fff, OP2B, N("xdwait") },
-:xdwait is raw_opcode=0xf8; subopcode2=0x3 {
+:xdwait is raw_opcode=0xf8; subopcode2=0x3 & reg1=0 {
   xdwait();
 }
 
 #	{ 0x000006f8, 0x00000fff, OP2B, U("f8/6") },
-:unk_f8_6 is raw_opcode=0xf8; subopcode2=0x6 {
-  todo();
+:xdfence is raw_opcode=0xf8; subopcode2=0x6 & reg1=0 {
+  xdfence();
+}
+#	{ 0x000008f8, 0x00000cff, OP2B, N("trap"), STRAP },
+:trap trapnum is raw_opcode=0xf8; subopcode2>=8 & subopcode2<=0xb & subopcode2 & reg1=0 [ trapnum = subopcode2 & 3; ] {
+  trap(trapnum:1);
 }
 
 #	{ 0x000007f8, 0x00000fff, OP2B, N("xcwait") },
-:xcwait is raw_opcode=0xf8; subopcode2=0x7 {
+:xcwait is raw_opcode=0xf8; subopcode2=0x7 & reg1=0 {
   xcwait();
 }
 
@@ -673,14 +740,14 @@
 }
 
 #	{ 0x000001f9, 0x00000fff, OP2B, N("add"), SP, REG1 },
+:add sp, reg1 is raw_opcode=0xf9; subopcode2=0x1 & reg1 & sp {
+  add(sp, sp, reg1);
+}
 @if defined(SUPPORT_FUC5P)
 #	/* Display these in a better way, perhaps? */
 #	{ 0x000002f9, 0x00000fff, OP2B, N("mpush"), REG1, .fmask = F_FUC5P },
-:mpush reg1 is raw_opcode=0xf9; subopcode2=0x2 & reg1 {
-  # TODO: I'm guessing if reg1 == 3 it pushes r0, r1, r2, and r3, etc.
-  # need to verify and implement somehow.
-  sp = sp - &reg1; # TODO: remove this horrible hack
-  push32(reg1);
+:mpush reg1 is raw_opcode=0xf9; subopcode2=0x2 & reg1 & mpushlist {
+  build mpushlist;
 }
 @endif
 
@@ -696,9 +763,11 @@
 }
 
 #	{ 0x000008f9, 0x00000fff, OP2B, N("itlb"), REG1, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :itlb reg1 is raw_opcode=0xf9; subopcode2=0x8 & reg1 {
-  todo(reg1);
+  itlb(reg1);
 }
+@endif
 
 #	{ 0x000009f9, 0x00000fff, OP2B, N("bset"), csw, REG1 },
 :bset csw, reg1 is raw_opcode=0xf9; subopcode2=0x9 & reg1 & csw {
@@ -724,32 +793,38 @@
 #	{ 0x000000f9, 0x000000ff, OP2B, OOPS, REG1 },
 #
 #	{ 0x000000fa, 0x000f00ff, OP3B, N("iowr"), IOR, REG2 },
-:iowr "I"^[reg1], reg2 is raw_opcode=0xfa; reg2 & reg1; subopcode3=0 {
-  io_write(reg1, reg2);
+:iowr "I"^[reg1], reg2 is raw_opcode=0xfa; reg2 & reg1; subopcode3=0 & reg3=0 {
+  *[io]:4 (reg1) = reg2;
 }
 
 #	{ 0x000100fa, 0x000f00ff, OP3B, N("iowrs"), IOR, REG2, .fmask = F_FUC3P },
-:iowrs "I"^[reg1], reg2 is raw_opcode=0xfa; reg2 & reg1; subopcode3=1 {
-  io_write_sync(reg1, reg2);
+@if defined(SUPPORT_FUC3P)
+:iowrs "I"^[reg1], reg2 is raw_opcode=0xfa; reg2 & reg1; subopcode3=1 & reg3=0 {
+  *[io]:4 (reg1) = reg2;
 }
+@endif
 
 #	{ 0x000400fa, 0x000f00ff, OP3B, N("xcld"), REG1, REG2 },
-:xcld reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x4 {
+:xcld reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x4 & reg3=0 {
   xcld(reg1, reg2);
 }
 
 #	{ 0x000500fa, 0x000f00ff, OP3B, N("xdld"), REG1, REG2 },
-:xdld reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x5 {
+:xdld reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x5 & reg3=0 {
   xdld(reg1, reg2);
 }
 
 #	{ 0x000600fa, 0x000f00ff, OP3B, N("xdst"), REG1, REG2 },
-:xdst reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x6 {
+:xdst reg1, reg2 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x6 & reg3=0 {
   xdst(reg1, reg2);
 }
 
+#	{ 0x000700fa, 0x000f00ff, OP3B, U("fa/7"), REG2, REG1, .fmask = F_FUC6P },
+#	{ 0x000500fe, 0x000f00ff, OP3B, U("fe/5"), REG2, REG1, .fmask = F_FUC6P },
+#	(v6 opcodes with unknown function: envydis flags them as unknown instructions, so they stay
+#	 undecoded here too)
 #	{ 0x000800fa, 0x000f00ff, OP3B, N("setp"), REG2, REG1 },
-:setp reg2, reg1 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x8 {
+:setp reg2, reg1 is raw_opcode=0xFA; reg2 & reg1; subopcode3=0x8 & reg3=0 {
   packflags(csw);
   local shift = reg1 & 0x1F;
   csw = (csw & ~(1 << shift)) | ((reg2 & 1) << shift);
@@ -761,44 +836,37 @@
 #	/* Display these in a better way, perhaps? */
 @if defined(SUPPORT_FUC5P)
 #	{ 0x000000fb, 0x000007ff, OP2B, N("mpop"), REG1, .fmask = F_FUC5P },
-:mpop reg1 is raw_opcode=0xFB; subopcodeb1_0_2=0 & reg1 {
-  # TODO: I'm guessing if reg1 == 3 it pops r0, r1, r2, and r3, etc.
-  # need to verify and implement somehow.
-  pop32(reg1);
-  sp = sp + &reg1; # TODO: remove this horrible hack
+:mpop reg1 is raw_opcode=0xFB; subopcodeb1_0_2=0 & b1bit3=0 & reg1 & mpoplist {
+  build mpoplist;
 }
 
 #	{ 0x000001fb, 0x000007ff, OP2B, N("mpopret"), REG1, ENDMARK, .fmask = F_FUC5P },
-:mpopret reg1 is raw_opcode=0xFB; subopcodeb1_0_2=1 & reg1 {
-  # TODO: see mpop
-  pop32(reg1);
-  sp = sp + &reg1; # TODO: remove this horrible hack
+:mpopret reg1 is raw_opcode=0xFB; subopcodeb1_0_2=1 & b1bit3=0 & reg1 & mpoplist {
+  build mpoplist;
   ret();
 }
 
 #	{ 0x000002fb, 0x000007ff, OP4B, N("mpopadd"), REG1, IMM16S, .fmask = F_FUC5P },
+:mpopadd reg1, imm16s is raw_opcode=0xFB; subopcodeb1_0_2=2 & b1bit3=0 & reg1 & mpoplist ; imm16s {
+  build mpoplist;
+  sp = sp + imm16s;
+}
 #	{ 0x000003fb, 0x000007ff, OP4B, N("mpopaddret"), REG1, IMM16S, ENDMARK, .fmask = F_FUC5P },
-:mpopaddret reg1, imm16s is raw_opcode=0xFB; subopcodeb1_0_2=3 & reg1 ; imm16s {
-  # TODO: see mpop
-  pop32(reg1);
-  sp = sp + &reg1; # TODO: remove this horrible hack
+:mpopaddret reg1, imm16s is raw_opcode=0xFB; subopcodeb1_0_2=3 & b1bit3=0 & reg1 & mpoplist ; imm16s {
+  build mpoplist;
   sp = sp + imm16s;
   ret();
 }
 
 #	{ 0x000004fb, 0x000007ff, OP3B, N("mpopadd"), REG1, IMM8S, .fmask = F_FUC5P },
-:mpopaddret reg1, imm8s is raw_opcode=0xFB; subopcodeb1_0_2=4 & reg1 ; imm8s {
-  # TODO: see mpop
-  pop32(reg1);
-  sp = sp + &reg1; # TODO: remove this horrible hack
+:mpopadd reg1, imm8s is raw_opcode=0xFB; subopcodeb1_0_2=4 & b1bit3=0 & reg1 & mpoplist ; imm8s {
+  build mpoplist;
   sp = sp + imm8s;
 }
 
 #	{ 0x000005fb, 0x000007ff, OP3B, N("mpopaddret"), REG1, IMM8S, ENDMARK, .fmask = F_FUC5P },
-:mpopaddret reg1, imm8s is raw_opcode=0xFB; subopcodeb1_0_2=5 & reg1 ; imm8s {
-  # TODO: see mpop
-  pop32(reg1);
-  sp = sp + &reg1; # TODO: remove this horrible hack
+:mpopaddret reg1, imm8s is raw_opcode=0xFB; subopcodeb1_0_2=5 & b1bit3=0 & reg1 & mpoplist ; imm8s {
+  build mpoplist;
   sp = sp + imm8s;
   ret();
 }
@@ -813,71 +881,78 @@
 #	{ 0x000000fc, 0x000000ff, OP2B, OOPS, REG1 },
 #
 #	{ 0x000000fd, 0x000f00ff, OP3B, N("mulu"), REG1, REG2 },
-:mulu reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x0 {
-  reg1 = todo(reg1, reg2);
+:mulu reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x0 & reg3=0 {
+  mulu(reg1, reg1, reg2);
 }
 
 #	{ 0x000100fd, 0x000f00ff, OP3B, N("muls"), REG1, REG2 },
-:muls reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x1 {
-  reg1 = sext(reg1 :2) * sext(reg2 :2);
+:muls reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x1 & reg3=0 {
+  muls(reg1, reg1, reg2);
 }
 
 #	{ 0x000200fd, 0x000f00ff, OP3B, N("sext"), REG1, REG2 },
+:sext reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x2 & reg3=0 {
+  op_sext(reg1, reg1, reg2);
+}
 #	{ 0x000400fd, 0x000f00ff, OP3B, N("and"), REG1, REG2 },
-:and reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x4 {
+:and reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x4 & reg3=0 {
   and(reg1, reg1, reg2);
 }
 
 #	{ 0x000500fd, 0x000f00ff, OP3B, N("or"), REG1, REG2 },
-:or reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x5 {
+:or reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x5 & reg3=0 {
   or(reg1, reg1, reg2);
 }
 
 #	{ 0x000600fd, 0x000f00ff, OP3B, N("xor"), REG1, REG2 },
-:xor reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x6 {
+:xor reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x6 & reg3=0 {
   xor(reg1, reg1, reg2);
 }
 
 #	{ 0x000900fd, 0x000f00ff, OP3B, N("bset"), REG1, REG2 },
-:bset reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x9 {
+:bset reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0x9 & reg3=0 {
   bset(reg1, (reg2 & 0x1F));
 }
 
 #	{ 0x000a00fd, 0x000f00ff, OP3B, N("bclr"), REG1, REG2 },
-:bclr reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0xa {
+:bclr reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0xa & reg3=0 {
   bclr(reg1, (reg2 & 0x1F));
 }
 
 #	{ 0x000b00fd, 0x000f00ff, OP3B, N("btgl"), REG1, REG2 },
-:btgl reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0xd {
+:btgl reg1, reg2 is raw_opcode=0xFD; reg2 & reg1; subopcode3=0xb & reg3=0 {
   btgl(reg1, (reg2 & 0x1F));
 }
 #	{ 0x000000fd, 0x000000ff, OP3B, OOPS, REG1, REG2 },
 #
 #	{ 0x000000fe, 0x000f00ff, OP3B, N("mov"), SREG2, REG1 },
-:mov sreg2, reg1 is raw_opcode=0xfe; reg1 & sreg2; subopcode3=0x0 {
+:mov sreg2, reg1 is raw_opcode=0xfe; reg1 & sreg2; subopcode3=0x0 & reg3=0 {
   sreg2 = reg1;
   # TODO: unpack csw
 }
 
 #	{ 0x000100fe, 0x000f00ff, OP3B, N("mov"), REG2, SREG1 },
-:mov reg2, sreg1 is raw_opcode=0xfe; sreg1 & reg2; subopcode3=0x1 {
+:mov reg2, sreg1 is raw_opcode=0xfe; sreg1 & reg2; subopcode3=0x1 & reg3=0 {
   # TODO: pack csw
   reg2 = sreg1;
 }
 
 #	{ 0x000200fe, 0x000f00ff, OP3B, N("ptlb"), REG2, REG1, .fmask = F_FUC3P },
-:vtlb reg2, reg1 is raw_opcode=0xfe; reg2 & reg1; subopcode3=0x2 {
+@if defined(SUPPORT_FUC3P)
+:ptlb reg2, reg1 is raw_opcode=0xfe; reg2 & reg1; subopcode3=0x2 & reg3=0 {
   reg2 = ptlb(reg1);
 }
+@endif
 
 #	{ 0x000300fe, 0x000f00ff, OP3B, N("vtlb"), REG2, REG1, .fmask = F_FUC3P },
-:vtlb reg2, reg1 is raw_opcode=0xfe; reg2 & reg1; subopcode3=0x3 {
+@if defined(SUPPORT_FUC3P)
+:vtlb reg2, reg1 is raw_opcode=0xfe; reg2 & reg1; subopcode3=0x3 & reg3=0 {
   reg2 = vtlb(reg1);
 }
+@endif
 
 #	{ 0x000c00fe, 0x000f00ff, OP3B, N("xbit"), REG2, csw, REG1 },
-:xbit reg2, csw, reg1 is raw_opcode=0xfe; reg2 & reg1 & csw; subopcode3=0xc {
+:xbit reg2, csw, reg1 is raw_opcode=0xfe; reg2 & reg1 & csw; subopcode3=0xc & reg3=0 {
   packflags(csw);
   xbit(reg2, csw, reg1);
   unpackflags(csw);
@@ -887,17 +962,24 @@
 #
 #	{ 0x000000ff, 0x000f00ff, OP3B, N("mulu"), REG3, REG1, REG2 },
 :mulu reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x0 & reg3 {
-  reg3 = zext(reg1 :2) * zext(reg2 :2);
+  mulu(reg3, reg1, reg2);
 }
 
 #	{ 0x000100ff, 0x000f00ff, OP3B, N("muls"), REG3, REG1, REG2 },
 :muls reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x1 & reg3 {
-  reg3 = sext(reg1 :2) * sext(reg2 :2);
-  #reg3 = todo(reg1, reg2);
+  muls(reg3, reg1, reg2);
 }
 
 #	{ 0x000200ff, 0x000f00ff, OP3B, N("sext"), REG3, REG1, REG2 },
+:sext reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x2 & reg3 {
+  op_sext(reg3, reg1, reg2);
+}
 #	{ 0x000300ff, 0x000f00ff, OP3B, N("extrs"), REG3, REG1, REG2, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
+:extrs reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x3 & reg3 {
+  extrs(reg3, reg1, reg2);
+}
+@endif
 #	{ 0x000400ff, 0x000f00ff, OP3B, N("and"), REG3, REG1, REG2 },
 :and reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x4 & reg3 {
   and(reg3, reg1, reg2);
@@ -914,26 +996,38 @@
 }
 
 #	{ 0x000700ff, 0x000f00ff, OP3B, N("extr"), REG3, REG1, REG2, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
+:extr reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x7 & reg3 {
+  extr(reg3, reg1, reg2);
+}
+@endif
 #	{ 0x000800ff, 0x000f00ff, OP3B, N("xbit"), REG3, REG1, REG2 },
 :xbit reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0x8 & reg3 {
   xbit(reg3, reg1, reg2);
 }
 
 #	{ 0x000c00ff, 0x000f00ff, OP3B, N("div"), REG3, REG1, REG2, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :div reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0xc & reg3 {
   reg3 = reg1 / reg2;
 }
+@endif
 
 #	{ 0x000d00ff, 0x000f00ff, OP3B, N("mod"), REG3, REG1, REG2, .fmask = F_FUC3P },
+@if defined(SUPPORT_FUC3P)
 :mod reg3, reg1, reg2 is raw_opcode=0xff; reg2 & reg1; subopcode3=0xd & reg3 {
   reg3 = reg1 % reg2;
 }
+@endif
 
 #	{ 0x000e00ff, 0x000f00ff, OP3B, U("ff/e"), REG3, IORR },
+:iords reg3, "I"^[reg1 + reg2*4] is raw_opcode=0xff; reg2 & reg1; subopcode3=0xE & reg3 {
+  reg3 = *[io]:4 (reg1 + reg2*4);
+}
 #	{ 0x000f00ff, 0x000f00ff, OP3B, N("iord"), REG3, IORR },
 
 :iord reg3, "I"^[reg1 + reg2*4] is raw_opcode=0xff; reg2 & reg1; subopcode3=0xF & reg3 {
-  reg3 = io_read(reg1 + reg2*4);
+  reg3 = *[io]:4 (reg1 + reg2*4);
 }
 
 

@@ -5,6 +5,8 @@ define alignment=1;
 
 define space imem       type=ram_space      size=4 default;
 define space dmem       type=ram_space      size=4;
+# I/O space (iord/iowr): the unit's MMIO registers, byte-addressed as envydis prints them
+define space io         type=ram_space      size=4;
 define space register   type=register_space size=4;
 
 # general-purpose registers
@@ -30,13 +32,44 @@ define register offset=0 size=1 [
   r12b _ _ _ r13b _ _ _ r14b _ _ _ r15b _ _ _
 ];
 
-# special-purpose registers
+# special-purpose registers (envytools names; csw is envytools' $flags; s2, s13-s15 are unnamed,
+# s9/s10 are cx/cauth on cores with the crypto coprocessor)
+@if defined(CRYPT_EXTENSION) && FUC_VERSION == "6"
 define register offset=0x40 size=4 [
-  iv0  iv1  iv2  ev
-  sp   pc   imb  dmb
-  csw  ccr  sec  ctx
-  exci sec1 imb1 dmb1
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    cx     cauth  xtargets
+  tstatus cauth1 xcbase1 xdbase1
 ];
+@elif defined(CRYPT_EXTENSION)
+define register offset=0x40 size=4 [
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    cx     cauth  xtargets
+  tstatus s13   s14    s15
+];
+@elif FUC_VERSION == "6"
+define register offset=0x40 size=4 [
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  tstatus s13   xcbase1 xdbase1
+];
+@elif FUC_VERSION == "0"
+define register offset=0x40 size=4 [
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  s12    s13    s14    s15
+];
+@else
+define register offset=0x40 size=4 [
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  tstatus s13   s14    s15
+];
+@endif
 
 @if defined(CRYPT_EXTENSION)
 # crypto registers
@@ -67,13 +100,9 @@ define register offset=0x200 size=4 [  # XXX: dirty hack; crypto regs are 133 bi
 #                is2=csw[22,1]
 #                ea=csw[24,1];
 
-# unpacked flags
-define register offset=0x100 size=1 [
-  CF # bit 8
-  OF # bit 9
-  SF # bit 10
-  ZF # bit 11
-];
+# Flags: named bit ranges of csw, so that every write to csw (mov, bset/bclr, setp, iret) is seen
+# by the conditions and every flag write shows up in csw
+define bitrange CF=csw[8,1] OF=csw[9,1] SF=csw[10,1] ZF=csw[11,1];
 
 # TODO: define flags?
 
@@ -90,19 +119,11 @@ define register offset=0x100 size=1 [
 @define S_flag "SF"
 @define Z_flag "ZF"
 
+# The flags live in csw itself (see the bit ranges above): nothing to pack or unpack.
 macro unpackflags(tmp) {
-  CF = (tmp & 0x100) != 0;
-  OF = (tmp & 0x200) != 0;
-  SF = (tmp & 0x400) != 0;
-  ZF = (tmp & 0x800) != 0;
 }
 
 macro packflags(tmp) {
-  tmp = (tmp & 0xFFFFF0FF)
-    | (0x100 * zext(CF & 1))
-    | (0x200 * zext(OF & 1))
-    | (0x400 * zext(SF & 1))
-    | (0x800 * zext(ZF & 1));
 }
 
 
@@ -129,6 +150,8 @@ define token opcode_byte1 (8)
   subopcodeb1_0_7=(0, 7)
   subopcodeL=(0, 6)
   pred1=(0, 2)
+  b1bit3=(3, 3)
+  b1hi2=(6, 7)
 ;
 
 define token opcode_byte2 (8)
@@ -139,10 +162,12 @@ define token opcode_byte2 (8)
   bitf8_1=(5,7)
 
   subopcode_crypti=(0,4)
+  b2hi3=(5,7)
 ;
 
 define token opcode_byte4 (8)
   subopcode5=(0, 3)
+  b4hi=(4, 7)
 
   crypt_extra=(0, 1)
   #subopcode_crypt=(2, 7)
@@ -160,12 +185,20 @@ define token crypt_pair (16)
   cimm=(4, 9)
 
   subopcode_crypt=(10,14)
+  cpb15=(15,15)
+  cpb3=(3,3)
+  cpb7=(7,7)
+  cpb89=(8,9)
+  cpb3_9=(3,9)
+  cpimm8=(0,7)
+  cphi=(8,14)
 ;
 @endif
 
 define token immediate8 (8)
   imm8=(0, 7)
   imm8s=(0, 7) signed
+  pred_imm=(0, 2)
   fimm8=(0, 7)
   fimm8s=(0, 7) signed
 ;
@@ -178,6 +211,7 @@ define token opcode_immediate16 (16)
 
   bitf16_0=(0,4)
   bitf16_1=(5,9)
+  bitf16_hi=(10,15)
 ;
 
 define token opcode_immediate24 (24)
@@ -201,10 +235,32 @@ attach variables [ reg0 reg1 reg2 reg3 ]
 
 attach variables [ sreg1 sreg2 ]
 [
-  iv0  iv1  iv2  ev
-  sp   pc   imb  dmb
-  csw  ccr  sec  ctx
-  exci sec1 imb1 dmb1
+@if defined(CRYPT_EXTENSION) && FUC_VERSION == "6"
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    cx     cauth  xtargets
+  tstatus cauth1 xcbase1 xdbase1
+@elif defined(CRYPT_EXTENSION)
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    cx     cauth  xtargets
+  tstatus s13   s14    s15
+@elif FUC_VERSION == "6"
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  tstatus s13   xcbase1 xdbase1
+@elif FUC_VERSION == "0"
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  s12    s13    s14    s15
+@else
+  iv0    iv1    s2     tv
+  sp     pc     xcbase xdbase
+  csw    s9     s10    xtargets
+  tstatus s13   s14    s15
+@endif
 ];
 
 @if defined(CRYPT_EXTENSION)
@@ -230,7 +286,7 @@ addr16: imm16 is imm16 {
   export *[imem]:4 imm16;
 }
 
-fimm24st: target is fimm24s [ target = 0 + fimm24s; ] {
+fimm24st: target is fimm24 [ target = 0 + fimm24; ] {
   export *[imem]:4 target;
 }
 

@@ -6,4 +6,4 @@
 
 @define CRYPT_EXTENSION
 
-@include "base_falcon.slaspec"
+@include "base_falcon.sinc"
