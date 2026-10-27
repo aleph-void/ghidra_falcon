@@ -2,13 +2,21 @@
 
 This is pretty immature, so you'll probably need to do some development to use it, but it's likely good enough to save a bit of time over an `envydis` dead-listing.
 
+> **Ghidra-Rare fork.** This fork has been tested against envydis and fixed: decoding of every
+> language matches envydis on every two-byte prefix and random words, the semantics are checked in
+> Ghidra's emulator, and nouveau's falcon firmware is used as real code. See
+> [GHIDRA-RARE.md](GHIDRA-RARE.md) for the results and remaining gaps, and
+> [CREDITS.md](CREDITS.md) for the list of changes. Prebuilt zips for Ghidra 12.1.3, 12.1.4 and
+> 12.2 are on this fork's Releases page. Languages: `falcon:LE:32:v0`, `v3`, `v4`, `v5` and `v6`
+> (v5/v6 with the crypto coprocessor).
+
 ![Screenshot](/images/screenshot1.png)
 
 ## Setup instructions
 
-- Ensure you have the ``JAVA_HOME`` environment variable set to the path of your JDK 11 installation.
+- Ensure you have the ``JAVA_HOME`` environment variable set to the JDK your Ghidra uses (JDK 21 for Ghidra 12.1, JDK 25 for 12.2).
 - Set the ``GHIDRA_INSTALL_DIR`` environment variable to your Ghidra install directory.
-- Run ``./gradlew``.
+- Run ``gradle buildExtension`` (or download a prebuilt zip from the Releases page).
 - You'll find the output zip file inside ``/dist``.
 - Copy the output zip to ``<Ghidra install directory>/Extensions/Ghidra``
 - Start Ghidra and use the "Install Extensions" dialog to finish the installation. (``File -> Install Extensions...``)
@@ -75,24 +83,23 @@ If you like syntax highlighting, Sleigh often looks okay highlighted as a bash s
 
 ## To-Do
 
-Finish adding instructions and figure out how to do thorough automated testing.
+~~Finish adding instructions and figure out how to do thorough automated testing.~~ Done in the
+Ghidra-Rare fork: `test/run-tests.sh` compares every two-byte prefix and 50,000 random words with
+envydis for each language, reaches every SLEIGH constructor and runs hand-computed emulator cases
+(see GHIDRA-RARE.md).
 
-It should be practical to generate a huge test file covering every instruction encoding with different operand values, and automatically compare the Ghidra and envydis output to finish the instruction decoding.
+Known issues/todo-list (status in the Ghidra-Rare fork):
 
-No idea how best to test the decompilation/pcode.
-
-Known issues/todo-list:
-
-* add other falcon variants
-* fix mpop/mpush (and variants) to read/write all values
-* rename "ram" to "iram" and document adding a "dram" section for globals
-* try making "io" a real address space? might make naming easier
-* see if there's a way to make crypto stuff decompile as `csecret(c1, 0x2)` instead of `csecret(1, 2)`
-* global stores can be reordered to come after pcodeop calls that implicitly read from them (probably a ghidra bug?)
-* can we bundle types? I'm loading an enum with io address constants (e.g. `FALCON_MAILBOX1 = 0x1100`) to make reversing easier. ("io" address space and default names might be the right approach?)
-* finish adding packflags and unpackflags anywhere the flags register is used directly. make "xbit" on condition flags just move the one register.
-* make the flags register actually show up when not just used for condition codes. writes to flags such as  "interrupt enable" don't show up in the decompiler.
-* update readme screenshot sometime - that function is looking a ton better already (https://imgur.com/KGQJebQ), but I want to try to get things stable first to avoid making the repo huge with png files
+* ~~add other falcon variants~~ fixed: v0, v3 and v6 added beside v4 and v5 (envytools knows no separate v1/v2 ISA)
+* ~~fix mpop/mpush (and variants) to read/write all values~~ fixed: they push/pop r0..rN
+* ~~rename "ram" to "iram" and document adding a "dram" section for globals~~ fixed earlier: the spaces are `imem` and `dmem`
+* ~~try making "io" a real address space?~~ fixed: `iord`/`iowr` access an `io` address space (volatile)
+* ~~see if there's a way to make crypto stuff decompile as `csecret(c1, 0x2)` instead of `csecret(1, 2)`~~ fixed earlier: crypto operations take the `c` registers
+* global stores can be reordered to come after pcodeop calls that implicitly read from them: remaining, a decompiler property (a pcodeop does not declare the memory it reads); fewer pcodeops remain now (I/O is plain memory)
+* can we bundle types? remaining: I/O register names differ per falcon unit (PMU, GR, SEC, ...), so no single list fits the processor module
+* ~~finish adding packflags and unpackflags anywhere the flags register is used directly~~ fixed: the flags are bit ranges of `csw`, no packing needed
+* ~~make the flags register actually show up when not just used for condition codes~~ fixed (same change)
+* update readme screenshot sometime: not a code issue
 
 ## Resources
 

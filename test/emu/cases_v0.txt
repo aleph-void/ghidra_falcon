@@ -1,0 +1,6 @@
+v0_and_no_flags fd1204
+v0_shl_c_only b61401
+v0_xbit_bit0 c82103
+v0_movf b92102
+v0_add_flags b61001
+broken_v0_movf b92102
